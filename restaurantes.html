@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>El Hambre Nuestra</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0b;
+    --surface: #1a1915;
+    --surface2: #242318;
+    --border: #2e2c24;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --cream: #f0e8d5;
+    --muted: #7a7560;
+    --tag-niños: #3d6b4f;
+    --tag-niños-text: #7ecb98;
+    --tag-hecho: #4a5568;
+    --tag-hecho-text: #9fc5e8;
+    --accent-sevilla: #c05252;
+    --accent-costa: #4a8fa8;
+    --accent-isla: #5a8a6a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0 10px;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+  }
+  .logo span { font-style: italic; color: var(--cream); }
+  .count-badge {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* SEARCH */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    width: 16px;
+    height: 16px;
+  }
+  #searchInput {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px 10px 36px;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #searchInput::placeholder { color: var(--muted); }
+  #searchInput:focus { border-color: var(--gold); }
+
+  /* FILTERS */
+  .filters {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    scrollbar-width: none;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .filter-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--bg);
+    font-weight: 500;
+  }
+  .filter-btn:active { transform: scale(0.95); }
+
+  /* SECTIONS */
+  main { padding: 12px 0 80px; }
+
+  .section {
+    margin-bottom: 4px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 16px 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    color: var(--cream);
+    letter-spacing: 0.01em;
+  }
+  .section-count {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .section-chevron {
+    color: var(--muted);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+  .section.collapsed .section-chevron { transform: rotate(-90deg); }
+  .section-body {
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+  .section.collapsed .section-body { max-height: 0 !important; }
+
+  /* RESTAURANT CARD */
+  .restaurant-list { padding: 0 12px; display: flex; flex-direction: column; gap: 6px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: background 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: transparent;
+    border-radius: 12px 0 0 12px;
+    transition: background 0.2s;
+  }
+  .card.visited::before { background: var(--gold); }
+  .card:active { background: var(--surface2); }
+
+  .card-left { flex: 1; min-width: 0; }
+  .card-name {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--cream);
+    line-height: 1.3;
+  }
+  .card-location {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 7px;
+  }
+  .tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .tag-niños { background: rgba(61,107,79,0.25); color: var(--tag-niños-text); border: 1px solid rgba(126,203,152,0.2); }
+  .tag-visitado { background: rgba(201,168,76,0.15); color: var(--gold-light); border: 1px solid rgba(201,168,76,0.3); }
+  .tag-tipo { background: rgba(46,44,36,0.8); color: var(--muted); border: 1px solid var(--border); }
+
+  .card-check {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    margin-top: 2px;
+  }
+  .card-check svg { width: 14px; height: 14px; color: transparent; transition: color 0.2s; }
+  .card.visited .card-check {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.12);
+  }
+  .card.visited .card-check svg { color: var(--gold); }
+
+  /* EMPTY */
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .empty-state .emoji { font-size: 36px; margin-bottom: 12px; }
+
+  /* STATS BAR */
+  .stats-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 100;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .stat-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--border);
+  }
+
+  /* HIDDEN */
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">Mis <span>Restaurantes</span></div>
+    <div class="count-badge" id="resultCount"></div>
+  </div>
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Buscar restaurante...">
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">Todos</button>
+    <button class="filter-btn" data-filter="visitado">✓ Visitados</button>
+    <button class="filter-btn" data-filter="pendiente">Por ir</button>
+    <button class="filter-btn" data-filter="niños">👶 Niños</button>
+    <button class="filter-btn" data-filter="sevilla">Sevilla</button>
+    <button class="filter-btn" data-filter="barbate">Barbate</button>
+    <button class="filter-btn" data-filter="tarifa">Tarifa</button>
+    <button class="filter-btn" data-filter="islacristina">Isla Cristina</button>
+  </div>
+</header>
+
+<main id="main"></main>
+
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-value" id="statTotal">0</div>
+    <div class="stat-label">Total</div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <div class="stat-value" id="statVisited">0</div>
+    <div class="stat-label">Visitados</div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <div class="stat-value" id="statPct">0%</div>
+    <div class="stat-label">Completado</div>
+  </div>
+</div>
+
+<script>
+const DATA = [
+  // SEVILLA - Con niños destacados
+  { id:1,  name:"QCross", location:"Parque Árbol Grande", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:2,  name:"Kiosco Santa Bárbara", location:"Parque Buhaira", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:3,  name:"Bambú", location:"Espartinas", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:4,  name:"Miano", location:"Lebrija", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:5,  name:"Asador La Puebla", location:"La Puebla del Río", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:6,  name:"Las Pajanosas", location:"Zona de servicio", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:7,  name:"Cafetería Domi Vélez", location:"Lebrija — zona niños", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:8,  name:"MR Mamut", location:"Burger Aljarafe — zona niños", zona:"sevilla", niños:true, tipo:"Burgers", visitado:false },
+  { id:9,  name:"Rancho Morancho", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:10, name:"Delantal Negro", location:"Centro — marroquí", zona:"sevilla", niños:true, tipo:"Marroquí", visitado:false },
+  { id:11, name:"Cevichano", location:"Sevilla", zona:"sevilla", niños:true, tipo:"Peruano", visitado:false },
+  { id:12, name:"Plato Plató", location:"Felipe II", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:13, name:"La Brunilda", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:14, name:"El Bartolomea", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:15, name:"Torres y García", location:"Centro", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:16, name:"Lobo López", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:17, name:"Perro Viejo", location:"Centro", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:18, name:"Perro Chiko", location:"Centro", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:19, name:"Gallinero de Sandra", location:"Centro", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:20, name:"Disparate", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:21, name:"La Bernarda", location:"Puente Bomberos", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:22, name:"Ovejas Negras", location:"Centro", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:23, name:"García Vidal", location:"Bermejales", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:24, name:"Aljibe", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:25, name:"María Trifulca", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:26, name:"Mechela", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:27, name:"La Casa del Tigre", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:28, name:"Mesón La Isla", location:"Sevilla Este", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:29, name:"Taberna del Este", location:"Sevilla Este", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:30, name:"Aderezo", location:"Sevilla Este", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:31, name:"María Germiná", location:"Sevilla Este", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:32, name:"Porta Rosa", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:33, name:"Leña al Lomo", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:34, name:"La Quinta Braseria", location:"Santa Catalina", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:35, name:"Sol y Sombra", location:"C/ Castilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:36, name:"Casa Aníbal", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:37, name:"Basque Eneko", location:"Sevilla", zona:"sevilla", niños:true, tipo:"Vasco", visitado:false },
+  { id:38, name:"Sibuya", location:"Centro", zona:"sevilla", niños:true, tipo:"Japonés", visitado:false },
+  { id:39, name:"Casa Montalvan", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:40, name:"La Majjareta", location:"Montequinto", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:41, name:"Grosso Napolitano", location:"Viapol", zona:"sevilla", niños:true, tipo:"Italiana", visitado:false },
+  { id:42, name:"Picantón", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:43, name:"Casa Yaki", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:44, name:"Seis", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:45, name:"Señor Cangrejo", location:"C/ Harinas", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:46, name:"Taberna La Romana", location:"Santiponce", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:47, name:"El Marriqueño", location:"Coria del Río", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:48, name:"Restaurante Malvaloca", location:"Encarnación", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:49, name:"Restaurante Doña Encarna", location:"Encarnación", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:50, name:"Ispal", location:"Plaza San Sebastián — menú degustación", zona:"sevilla", niños:true, tipo:"Degustación", visitado:false },
+  { id:51, name:"Pan y Circo", location:"El Salvador", zona:"sevilla", niños:true, tipo:null, visitado:true },
+  { id:52, name:"La Lola", location:"Hotel junto a la Alameda", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:53, name:"Casa Ozama", location:"Al lado Parque M. Luisa", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:54, name:"De la O", location:"Paseo Ntra. Sra. de la Ó — Triana", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:55, name:"Taberna Alabardero", location:"C/ Zaragoza", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:56, name:"Recoveco", location:"C/ Ortiz de Zúñiga 8", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:57, name:"Manolo León", location:"C/ Guadalquivir", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:58, name:"Bar Giralda", location:"C/ Mateos Gago", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:59, name:"Manolo Mayo", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:60, name:"Antigua Filomena", location:"Bermejales", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:61, name:"Leartisan Bistró", location:"Bermejales", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:62, name:"De la Cruz", location:"Tomares", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:63, name:"Rico", location:"Rinconete y Cortadillo — San Jacinto", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:64, name:"Casa Carmen", location:"Centro — junto a la Plaza de Toros", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:65, name:"Taberna Caneto", location:"Centro", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:66, name:"Braseros Moroncho", location:"Castilleja", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:67, name:"Lola Cacerola", location:"Por el río", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:68, name:"Escalona", location:"La Alfalfa", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:69, name:"Malandro", location:"Plaza de Toros — sin niños", zona:"sevilla", niños:false, tipo:null, visitado:false },
+  { id:70, name:"El Cerdo Negro", location:"Pino Montano", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:71, name:"Cocoma", location:"Bormujos", zona:"sevilla", niños:true, tipo:null, visitado:false },
+  { id:72, name:"La Cochera del Abuelo", location:"Sevilla", zona:"sevilla", niños:true, tipo:null, visitado:false },
+
+  // BARBATE
+  { id:73, name:"Peña del Atún", location:"Barbate", zona:"barbate", niños:false, tipo:"Atún", visitado:false },
+  { id:74, name:"Peña El Cartucho", location:"Barbate", zona:"barbate", niños:false, tipo:"Atún", visitado:false },
+  { id:75, name:"Paquete Torres", location:"Barbate", zona:"barbate", niños:false, tipo:null, visitado:false },
+  { id:76, name:"El Capitán", location:"Barbate", zona:"barbate", niños:false, tipo:null, visitado:false },
+  { id:77, name:"El Abelardo", location:"Barbate", zona:"barbate", niños:false, tipo:null, visitado:false },
+
+  // TARIFA
+  { id:78, name:"La Pescadería", location:"Tarifa", zona:"tarifa", niños:false, tipo:"Pescado", visitado:false },
+  { id:79, name:"La Tarifeña", location:"Tarifa", zona:"tarifa", niños:false, tipo:null, visitado:false },
+
+  // ISLA CRISTINA
+  { id:80, name:"Casa Gato", location:"Isla Cristina", zona:"islacristina", niños:false, tipo:null, visitado:false },
+  { id:81, name:"Restaurante Cristina", location:"Isla Cristina — variado, no caro", zona:"islacristina", niños:false, tipo:null, visitado:false },
+  { id:82, name:"La Sal", location:"Isla Cristina — Centro: pulpo y puntillitas", zona:"islacristina", niños:false, tipo:"Mariscos", visitado:false },
+  { id:83, name:"Verbena Casa Manino", location:"Isla Cristina — arroces, sardinas, ventresca", zona:"islacristina", niños:false, tipo:"Arroces", visitado:false },
+  { id:84, name:"Goyo", location:"Isla Cristina — araña, zamburiñas", zona:"islacristina", niños:false, tipo:"Mariscos", visitado:false },
+  { id:85, name:"La Purísima", location:"Isla Cristina — Centro", zona:"islacristina", niños:false, tipo:null, visitado:false },
+  { id:86, name:"Bebo's", location:"Isla Cristina", zona:"islacristina", niños:false, tipo:"Burgers & Pizzas", visitado:false },
+  { id:87, name:"Patera", location:"Isla Cristina — junto al paseo: pulpo al Luis Felipe", zona:"islacristina", niños:false, tipo:"Mariscos", visitado:false },
+];
+
+const SECTIONS = [
+  { key:"sevilla-ninos",    label:"Sevilla — Con Niños",    dot:"#c9a84c",  zona:"sevilla",      ninosFilter: true  },
+  { key:"sevilla-adultos",  label:"Sevilla — Sin Niños",    dot:"#c05252",  zona:"sevilla",      ninosFilter: false },
+  { key:"barbate",          label:"Barbate",                dot:"#4a8fa8",  zona:"barbate",      ninosFilter: null  },
+  { key:"tarifa",           label:"Tarifa",                 dot:"#5aa88a",  zona:"tarifa",       ninosFilter: null  },
+  { key:"islacristina",     label:"Isla Cristina",          dot:"#7a6ea8",  zona:"islacristina", ninosFilter: null  },
+];
+
+let visited = JSON.parse(localStorage.getItem("rest_visited") || "{}");
+let currentFilter = "all";
+let searchQuery = "";
+
+function saveVisited() {
+  localStorage.setItem("rest_visited", JSON.stringify(visited));
+}
+
+function getVisited(id) {
+  return visited[id] !== undefined ? visited[id] : DATA.find(r=>r.id===id)?.visitado || false;
+}
+
+function toggleVisited(id) {
+  visited[id] = !getVisited(id);
+  saveVisited();
+  render();
+}
+
+function matchesFilter(r) {
+  const vis = getVisited(r.id);
+  if (currentFilter === "visitado") return vis;
+  if (currentFilter === "pendiente") return !vis;
+  if (currentFilter === "niños") return r.niños;
+  if (currentFilter === "sevilla") return r.zona === "sevilla";
+  if (currentFilter === "barbate") return r.zona === "barbate";
+  if (currentFilter === "tarifa") return r.zona === "tarifa";
+  if (currentFilter === "islacristina") return r.zona === "islacristina";
+  return true;
+}
+
+function matchesSearch(r) {
+  if (!searchQuery) return true;
+  const q = searchQuery.toLowerCase();
+  return r.name.toLowerCase().includes(q) ||
+         (r.location||"").toLowerCase().includes(q) ||
+         (r.tipo||"").toLowerCase().includes(q);
+}
+
+function render() {
+  const main = document.getElementById("main");
+  const allFiltered = DATA.filter(r => matchesFilter(r) && matchesSearch(r));
+
+  // stats
+  const totalAll = DATA.length;
+  const visitedAll = DATA.filter(r => getVisited(r.id)).length;
+  document.getElementById("statTotal").textContent = totalAll;
+  document.getElementById("statVisited").textContent = visitedAll;
+  document.getElementById("statPct").textContent = Math.round(visitedAll/totalAll*100)+"%";
+  document.getElementById("resultCount").textContent = allFiltered.length + " lugares";
+
+  if (allFiltered.length === 0) {
+    main.innerHTML = `<div class="empty-state"><div class="emoji">🍽️</div>No se encontraron restaurantes</div>`;
+    return;
+  }
+
+  let html = "";
+  SECTIONS.forEach(sec => {
+    let items = allFiltered.filter(r => r.zona === sec.zona);
+    if (sec.ninosFilter === true)  items = items.filter(r => r.niños);
+    if (sec.ninosFilter === false) items = items.filter(r => !r.niños);
+    if (!items.length) return;
+    const secId = "sec-" + sec.key;
+    html += `
+    <div class="section" id="sec-${sec.key}" data-zone="${sec.key}">
+      <div class="section-header" onclick="toggleSection('${sec.key}')">
+        <div class="section-title-wrap">
+          <div class="section-dot" style="background:${sec.dot}"></div>
+          <div class="section-title">${sec.label}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="section-count">${items.length}</span>
+          <svg class="section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="section-body" style="max-height:9999px">
+        <div class="restaurant-list">
+          ${items.map(r => cardHTML(r)).join("")}
+        </div>
+        <div style="height:8px"></div>
+      </div>
+    </div>`;
+  });
+
+  main.innerHTML = html;
+}
+
+function cardHTML(r) {
+  const vis = getVisited(r.id);
+  let tags = "";
+  if (vis) tags += `<span class="tag tag-visitado">✓ Visitado</span>`;
+  if (r.tipo) tags += `<span class="tag tag-tipo">${r.tipo}</span>`;
+  return `
+  <div class="card ${vis?"visited":""}" id="card-${r.id}">
+    <div class="card-left">
+      <div class="card-name">${r.name}</div>
+      ${r.location ? `<div class="card-location">${r.location}</div>` : ""}
+      ${tags ? `<div class="card-tags">${tags}</div>` : ""}
+    </div>
+    <div class="card-check" onclick="toggleVisited(${r.id})">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+  </div>`;
+}
+
+function toggleSection(key) {
+  const sec = document.getElementById("sec-" + key);
+  sec.classList.toggle("collapsed");
+}
+
+// Filters
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+// Search
+document.getElementById("searchInput").addEventListener("input", e => {
+  searchQuery = e.target.value.trim();
+  render();
+});
+
+// Init
+render();
+</script>
+</body>
+</html>
