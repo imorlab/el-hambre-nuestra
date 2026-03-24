@@ -19,7 +19,7 @@ function renderAuthScreen() {
   app.innerHTML = `
     <div class="auth-container">
       <div class="auth-card">
-        <div class="auth-title">El Hambre <span style="font-style: italic;">Nuestra</span></div>
+        <div class="logo" style="text-align: center; font-size: 28px; margin-bottom: 8px;">El Hambre <span>Nuestra</span></div>
         <div class="auth-subtitle">Gestiona tus restaurantes favoritos</div>
         
         <div id="authForm" class="auth-form">
