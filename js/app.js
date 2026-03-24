@@ -125,27 +125,22 @@ async function renderApp() {
     </div>
   `;
 
-  // User badge
   const userBadge = document.getElementById('userBadge');
   userBadge.textContent = currentUser.email.split('@')[0];
 
-  // Logout
   document.getElementById('btnLogout').addEventListener('click', async () => {
     await signOut();
   });
 
-  // Admin
   document.getElementById('btnAdmin').addEventListener('click', () => {
     showAdminModal();
   });
 
-  // Search
   document.getElementById('searchInput').addEventListener('input', (e) => {
     searchQuery = e.target.value.toLowerCase();
     renderRestaurants();
   });
 
-  // Filters
   renderFilters();
   renderRestaurants();
 }
@@ -156,16 +151,32 @@ function renderFilters() {
     <button class="filter-btn active" data-filter="all">Todos</button>
     <button class="filter-btn" data-filter="visitado">✓ Visitados</button>
     <button class="filter-btn" data-filter="pendiente">Por ir</button>
-    ${zonas.map(z => `<button class="filter-btn" data-filter="zona-${z.id}">${z.nombre}</button>`).join('')}
+    <select id="zonaFilter" class="filter-select">
+      <option value="">Todas las zonas</option>
+      ${zonas.map(z => `<option value="zona-${z.id}">${z.nombre}</option>`).join('')}
+    </select>
   `;
 
   filters.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       filters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      document.getElementById('zonaFilter').value = '';
       currentFilter = btn.dataset.filter;
       renderRestaurants();
     });
+  });
+
+  document.getElementById('zonaFilter').addEventListener('change', (e) => {
+    if (e.target.value) {
+      filters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      currentFilter = e.target.value;
+    } else {
+      filters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      filters.querySelector('[data-filter="all"]').classList.add('active');
+      currentFilter = 'all';
+    }
+    renderRestaurants();
   });
 }
 
@@ -194,7 +205,6 @@ function renderRestaurants() {
   const main = document.getElementById('main');
   const filtered = restaurantes.filter(r => matchesFilter(r) && matchesSearch(r));
 
-  // Stats
   const total = restaurantes.length;
   const visited = visitas.length;
   document.getElementById('statTotal').textContent = total;
@@ -206,7 +216,6 @@ function renderRestaurants() {
     return;
   }
 
-  // Group by zona
   const grouped = {};
   filtered.forEach(r => {
     if (!grouped[r.zona_id]) {
@@ -309,7 +318,6 @@ function showAdminModal() {
 
   document.body.appendChild(overlay);
 
-  // Render zonas
   const zonasList = overlay.querySelector('#zonasList');
   zonasList.innerHTML = zonas.map(z => `
     <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--bg); border-radius: 6px; margin-bottom: 6px;">
@@ -324,7 +332,6 @@ function showAdminModal() {
     </div>
   `).join('');
 
-  // Render restaurantes
   const restaurantesList = overlay.querySelector('#restaurantesList');
   restaurantesList.innerHTML = restaurantes.map(r => `
     <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--bg); border-radius: 6px; margin-bottom: 6px;">
@@ -512,5 +519,4 @@ function editRestaurante(restauranteId) {
   showRestauranteForm(restauranteId);
 }
 
-// Init
 initAuth();
