@@ -78,14 +78,21 @@ git push -u origin main
 
 ```
 el-hambre-nuestra/
-├── index.html          # HTML principal
-├── styles.css          # Estilos (Vanilla CSS)
-├── config.js           # Configuración de Supabase
-├── auth.js             # Funciones de autenticación
-├── db.js               # Funciones de base de datos
-├── app.js              # Lógica principal de la app
-├── setup.sql           # Script SQL para crear tablas
-└── README.md           # Este archivo
+├── index.html                    # HTML principal
+├── README.md                     # Este archivo
+├── .nojekyll                     # Para GitHub Pages
+├── css/
+│   └── styles.css               # Estilos (Vanilla CSS)
+├── js/
+│   ├── config.js                # Configuración de Supabase
+│   ├── auth.js                  # Funciones de autenticación
+│   ├── db.js                    # Funciones de base de datos
+│   └── app.js                   # Lógica principal de la app
+├── sql/
+│   ├── setup.sql                # Script SQL para crear tablas
+│   └── seed-data.sql            # Datos iniciales
+└── image/
+    └── favicon/                 # Iconos de la app
 ```
 
 ## Uso
