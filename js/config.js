@@ -1,14 +1,22 @@
 // Supabase Configuration
-(function() {
-  if (window.supabaseClient) return; // Ya está inicializado
+(async function() {
+  if (window.supabaseClient) return;
   
-  const SUPABASE_URL = 'https://nxplxutlvvlqqhlsnxdx.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_eK75ppbv13cJ0okn3v5O3A_WWCaUSkV';
-  
-  if (!window.supabase) {
-    console.error('Supabase library not loaded');
-    return;
+  try {
+    const response = await fetch('../config.json');
+    const config = await response.json();
+    
+    const SUPABASE_URL = config.supabase.url;
+    const SUPABASE_ANON_KEY = config.supabase.anonKey;
+    
+    if (!window.supabase) {
+      console.error('Supabase library not loaded');
+      return;
+    }
+    
+    window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('Supabase initialized with URL:', SUPABASE_URL);
+  } catch (error) {
+    console.error('Error loading config:', error);
   }
-  
-  window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 })();
