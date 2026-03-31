@@ -2,7 +2,13 @@ import { getSupabase } from './supabase';
 
 export async function signUp(email, password) {
   const supabase = getSupabase();
-  const { data, error } = await supabase.auth.signUp({ email, password });
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailConfirmRedirectUrl: window.location.origin + '/',
+    },
+  });
   if (error) throw error;
   return data;
 }
