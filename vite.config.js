@@ -4,8 +4,10 @@ import { join } from 'path';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const base = '/el-hambre-nuestra/';
   
   return {
+    base,
     build: {
       copyPublicDir: true,
     },
@@ -39,6 +41,14 @@ export default defineConfig(({ mode }) => {
             
             writeFileSync(destPath, content);
           });
+
+          const indexPath = join(__dirname, 'dist/index.html');
+          if (existsSync(indexPath)) {
+            let html = readFileSync(indexPath, 'utf-8');
+            html = html.replace(/src="js\//g, `src="${base}js/`);
+            html = html.replace(/href="css\//g, `href="${base}css/`);
+            writeFileSync(indexPath, html);
+          }
         },
       },
     ],
