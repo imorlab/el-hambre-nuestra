@@ -25,7 +25,7 @@ if (accessToken && expiresAt) {
   supabase.auth.setSession(session).then(({ error }) => {
     if (!error) {
       window.location.hash = '';
-      window.location.href = '/el-hambre-nuestra/';
+      window.location.href = window.location.origin + '/el-hambre-nuestra/';
     }
   });
 }
