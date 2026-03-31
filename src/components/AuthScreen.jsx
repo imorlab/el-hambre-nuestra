@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useToast } from '../hooks/useToast';
 
 export default function AuthScreen({ signIn, signUp }) {
   const [isSignUp, setIsSignUp] = useState(true);
@@ -6,6 +7,7 @@ export default function AuthScreen({ signIn, signUp }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { showSuccess, showError } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,13 +17,15 @@ export default function AuthScreen({ signIn, signUp }) {
     try {
       if (isSignUp) {
         await signUp(email, password);
-        alert('Registro exitoso. Por favor inicia sesión.');
+        showSuccess('Registro exitoso. Por favor inicia sesión.');
         setIsSignUp(false);
       } else {
         await signIn(email, password);
+        showSuccess('¡Bienvenido de nuevo!');
       }
     } catch (err) {
       setError(err.message);
+      showError(err.message);
     } finally {
       setLoading(false);
     }

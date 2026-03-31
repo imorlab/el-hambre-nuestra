@@ -1,17 +1,25 @@
 import { useState } from 'react';
 import { toggleVisita } from '../services/db';
 import { openInMaps } from '../services/geocode';
+import { useToast } from '../hooks/useToast';
 
 function RestaurantCard({ restaurante, visitas, userId, onReload }) {
   const isVisited = visitas.some(v => v.restaurante_id === restaurante.id);
+  const { showSuccess, showError } = useToast();
 
   const handleToggle = async (e) => {
     e.stopPropagation();
     try {
+      const wasVisited = isVisited;
       await toggleVisita(userId, restaurante.id);
       await onReload();
+      if (wasVisited) {
+        showSuccess('Eliminado de visitados');
+      } else {
+        showSuccess('¡Marcado como visitado! 🎉');
+      }
     } catch (error) {
-      alert('Error: ' + error.message);
+      showError('Error: ' + error.message);
     }
   };
 

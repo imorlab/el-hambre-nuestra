@@ -64,12 +64,16 @@ export async function getVisitas(userId) {
 export async function toggleVisita(userId, restauranteId) {
   const supabase = getSupabase();
   
-  const { data: existing } = await supabase
+  const { data: existing, error: queryError } = await supabase
     .from('visitas')
     .select('id')
     .eq('user_id', userId)
     .eq('restaurante_id', restauranteId)
-    .single();
+    .maybeSingle();
+
+  if (queryError && queryError.code !== 'PGRST116') {
+    throw queryError;
+  }
 
   if (existing) {
     const { error } = await supabase.from('visitas').delete().eq('id', existing.id);

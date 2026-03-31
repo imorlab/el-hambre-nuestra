@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ToastProvider from './components/ToastProvider';
 import { useAuth } from './hooks/useAuth';
 import { useData } from './hooks/useData';
 import AuthScreen from './components/AuthScreen';
@@ -45,7 +46,7 @@ export default function App() {
   });
 
   return (
-    <>
+    <ToastProvider>
       <Header
         user={user}
         searchQuery={searchQuery}
@@ -101,6 +102,6 @@ export default function App() {
           onReload={reload}
         />
       )}
-    </>
+    </ToastProvider>
   );
 }
