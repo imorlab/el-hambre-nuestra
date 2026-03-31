@@ -17,7 +17,7 @@ export default function AuthScreen({ signIn, signUp }) {
     try {
       if (isSignUp) {
         await signUp(email, password);
-        showSuccess('Registro exitoso. Por favor inicia sesión.');
+        showSuccess('¡Revisa tu bandeja de entrada! Te hemos enviado un enlace de confirmación.');
         setIsSignUp(false);
       } else {
         await signIn(email, password);

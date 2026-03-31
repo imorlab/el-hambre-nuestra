@@ -23,7 +23,11 @@ export default function App() {
   }
 
   if (!user) {
-    return <AuthScreen signIn={signIn} signUp={signUp} />;
+    return (
+      <ToastProvider>
+        <AuthScreen signIn={signIn} signUp={signUp} />
+      </ToastProvider>
+    );
   }
 
   const filteredRestaurantes = restaurantes.filter(r => {
