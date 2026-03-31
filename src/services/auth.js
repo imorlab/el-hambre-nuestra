@@ -6,7 +6,7 @@ export async function signUp(email, password) {
     email,
     password,
     options: {
-      emailConfirmRedirectUrl: window.location.origin + '/',
+      emailConfirmRedirectUrl: 'https://imorlab.github.io/el-hambre-nuestra/',
     },
   });
   if (error) throw error;
