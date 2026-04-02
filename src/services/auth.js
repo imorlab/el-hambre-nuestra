@@ -6,7 +6,7 @@ export async function signUp(email, password) {
     email,
     password,
     options: {
-      redirectTo: 'https://imorlab.github.io/el-hambre-nuestra/',
+      emailRedirectTo: 'https://imorlab.github.io/el-hambre-nuestra/',
     },
   });
   if (error) throw error;
