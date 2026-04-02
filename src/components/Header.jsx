@@ -1,8 +1,17 @@
-export default function Header({ user, searchQuery, setSearchQuery, onLogout, onAdmin }) {
+export default function Header({ user, searchQuery, setSearchQuery, onLogout, onAdmin, showBack, onBack }) {
   return (
     <header>
       <div className="header-top">
-        <div className="logo">El Hambre <span>Nuestra</span></div>
+        {showBack ? (
+          <button className="back-btn" onClick={onBack}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            <span>El Hambre <span className="back-title-italic">Nuestra</span></span>
+          </button>
+        ) : (
+          <div className="logo">El Hambre <span>Nuestra</span></div>
+        )}
         <div className="header-actions">
           <button className="btn-icon" title="Administración" onClick={onAdmin}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -17,18 +26,20 @@ export default function Header({ user, searchQuery, setSearchQuery, onLogout, on
           </button>
         </div>
       </div>
-      <div className="search-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        <input
-          type="text"
-          className="form-input"
-          placeholder="Buscar restaurante..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
+      {showBack && (
+        <div className="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input
+            type="text"
+            className="form-input"
+            placeholder="Buscar restaurante..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      )}
     </header>
   );
 }

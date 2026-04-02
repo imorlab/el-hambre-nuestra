@@ -15,6 +15,7 @@ export default function App() {
   const { user, loading, signIn, signUp, signOut } = useAuth();
   const { zonas, restaurantes, visitas, reload } = useData(user);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentFilter, setCurrentFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -30,7 +31,10 @@ export default function App() {
     );
   }
 
-  const filteredRestaurantes = restaurantes.filter(r => {
+  const restaurantsConNiños = restaurantes.filter(r => r.niños === true);
+  const restaurantsSinNiños = restaurantes.filter(r => r.niños !== true);
+
+  const filteredRestaurantes = (selectedCategory === 'con-niños' ? restaurantsConNiños : restaurantsSinNiños).filter(r => {
     const matchesFilter = (() => {
       if (currentFilter === 'visitado') return visitas.some(v => v.restaurante_id === r.id);
       if (currentFilter === 'pendiente') return !visitas.some(v => v.restaurante_id === r.id);
@@ -57,47 +61,66 @@ export default function App() {
         setSearchQuery={setSearchQuery}
         onLogout={signOut}
         onAdmin={() => setShowAdmin(true)}
+        showBack={!!selectedCategory}
+        onBack={() => { setSelectedCategory(null); setCurrentFilter('all'); setSearchQuery(''); }}
       />
-      <main>
-        <div className="filters">
-          <button 
-            className={`filter-btn ${currentFilter === 'all' ? 'active' : ''}`}
-            onClick={() => setCurrentFilter('all')}
-          >
-            Todos
-          </button>
-          <button 
-            className={`filter-btn ${currentFilter === 'visitado' ? 'active' : ''}`}
-            onClick={() => setCurrentFilter('visitado')}
-          >
-            ✓ Visitados
-          </button>
-          <button 
-            className={`filter-btn ${currentFilter === 'pendiente' ? 'active' : ''}`}
-            onClick={() => setCurrentFilter('pendiente')}
-          >
-            Por ir
-          </button>
-          <select 
-            className="filter-select"
-            value={currentFilter.startsWith('zona-') ? currentFilter : ''}
-            onChange={(e) => setCurrentFilter(e.target.value || 'all')}
-          >
-            <option value="">Todas las zonas</option>
-            {zonas.map(z => (
-              <option key={z.id} value={`zona-${z.id}`}>{z.nombre}</option>
-            ))}
-          </select>
-        </div>
-        <RestaurantList
-          zonas={zonas}
-          restaurantes={filteredRestaurantes}
-          visitas={visitas}
-          userId={user.id}
-          onReload={reload}
-        />
-      </main>
-      <StatsBar total={restaurantes.length} visited={visitas.length} />
+      {!selectedCategory ? (
+        <main className="main-menu">
+          <div className="menu-buttons">
+            <button className="menu-btn" onClick={() => setSelectedCategory('con-niños')}>
+              <span className="menu-emoji">👶</span>
+              <span className="menu-title">Con niños</span>
+              <span className="menu-count">{restaurantsConNiños.length}</span>
+            </button>
+            <button className="menu-btn" onClick={() => setSelectedCategory('sin-niños')}>
+              <span className="menu-emoji">🍽️</span>
+              <span className="menu-title">Sin niños</span>
+              <span className="menu-count">{restaurantsSinNiños.length}</span>
+            </button>
+          </div>
+        </main>
+      ) : (
+        <main>
+          <div className="filters">
+            <button 
+              className={`filter-btn ${currentFilter === 'all' ? 'active' : ''}`}
+              onClick={() => setCurrentFilter('all')}
+            >
+              Todos
+            </button>
+            <button 
+              className={`filter-btn ${currentFilter === 'visitado' ? 'active' : ''}`}
+              onClick={() => setCurrentFilter('visitado')}
+            >
+              ✓ Visitados
+            </button>
+            <button 
+              className={`filter-btn ${currentFilter === 'pendiente' ? 'active' : ''}`}
+              onClick={() => setCurrentFilter('pendiente')}
+            >
+              Por ir
+            </button>
+            <select 
+              className="filter-select"
+              value={currentFilter.startsWith('zona-') ? currentFilter : ''}
+              onChange={(e) => setCurrentFilter(e.target.value || 'all')}
+            >
+              <option value="">Todas las zonas</option>
+              {zonas.map(z => (
+                <option key={z.id} value={`zona-${z.id}`}>{z.nombre}</option>
+              ))}
+            </select>
+          </div>
+          <RestaurantList
+            zonas={zonas}
+            restaurantes={filteredRestaurantes}
+            visitas={visitas}
+            userId={user.id}
+            onReload={reload}
+          />
+        </main>
+      )}
+      {selectedCategory && <StatsBar total={filteredRestaurantes.length} visited={visitas.filter(v => filteredRestaurantes.some(r => r.id === v.restaurante_id)).length} />}
       {showAdmin && (
         <AdminModal
           zonas={zonas}

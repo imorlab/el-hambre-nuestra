@@ -34,16 +34,16 @@ export async function getRestaurantes() {
   return data || [];
 }
 
-export async function createRestaurante(nombre, location, zona_id, tipo, niños) {
+export async function createRestaurante(nombre, location, zona_id, tipo, niños, description) {
   const supabase = getSupabase();
-  const { data, error } = await supabase.from('restaurantes').insert([{ nombre, location, zona_id, tipo, niños }]).select();
+  const { data, error } = await supabase.from('restaurantes').insert([{ nombre, location, zona_id, tipo, niños, description }]).select();
   if (error) throw error;
   return data[0];
 }
 
-export async function updateRestaurante(id, nombre, location, zona_id, tipo, niños) {
+export async function updateRestaurante(id, nombre, location, zona_id, tipo, niños, description) {
   const supabase = getSupabase();
-  const { data, error } = await supabase.from('restaurantes').update({ nombre, location, zona_id, tipo, niños }).eq('id', id).select();
+  const { data, error } = await supabase.from('restaurantes').update({ nombre, location, zona_id, tipo, niños, description }).eq('id', id).select();
   if (error) throw error;
   return data[0];
 }

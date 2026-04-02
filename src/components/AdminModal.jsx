@@ -101,9 +101,9 @@ export default function AdminModal({ zonas, restaurantes, onClose, onReload }) {
             onClose={() => setShowRestauranteForm(false)}
             onSave={async (data) => {
               if (editingRestaurante) {
-                await updateRestaurante(editingRestaurante.id, data.nombre, data.location, data.zona_id, data.tipo, data.niños);
+                await updateRestaurante(editingRestaurante.id, data.nombre, data.location, data.zona_id, data.tipo, data.niños, data.description);
               } else {
-                await createRestaurante(data.nombre, data.location, data.zona_id, data.tipo, data.niños);
+                await createRestaurante(data.nombre, data.location, data.zona_id, data.tipo, data.niños, data.description);
               }
               await onReload();
               setShowRestauranteForm(false);
@@ -153,6 +153,7 @@ function RestauranteForm({ restaurante, zonas, onClose, onSave }) {
   const [zona_id, setZona_id] = useState(restaurante?.zona_id || '');
   const [tipo, setTipo] = useState(restaurante?.tipo || '');
   const [niños, setNiños] = useState(restaurante?.niños || false);
+  const [description, setDescripcion] = useState(restaurante?.description || '');
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -192,9 +193,13 @@ function RestauranteForm({ restaurante, zonas, onClose, onSave }) {
             <span>Apto para niños</span>
           </label>
         </div>
+        <div className="form-group">
+          <label className="form-label">Descripción (recomendaciones)</label>
+          <textarea className="form-textarea" value={description} onChange={e => setDescripcion(e.target.value)} rows={4} placeholder="Información adicional, recomendaciones, tips..."></textarea>
+        </div>
         <div className="btn-group">
           <button className="btn btn-secondary" onClick={onClose}>Cancelar</button>
-          <button className="btn btn-primary" onClick={() => onSave({ nombre, location, zona_id, tipo, niños })}>Guardar</button>
+          <button className="btn btn-primary" onClick={() => onSave({ nombre, location, zona_id, tipo, niños, description })}>Guardar</button>
         </div>
       </div>
     </div>

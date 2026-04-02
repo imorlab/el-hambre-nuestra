@@ -6,6 +6,7 @@ import { useToast } from '../hooks/useToast';
 function RestaurantCard({ restaurante, visitas, userId, onReload }) {
   const isVisited = visitas.some(v => v.restaurante_id === restaurante.id);
   const { showSuccess, showError } = useToast();
+  const [showDescription, setShowDescription] = useState(false);
 
   const handleToggle = async (e) => {
     e.stopPropagation();
@@ -49,6 +50,19 @@ function RestaurantCard({ restaurante, visitas, userId, onReload }) {
           {restaurante.niños && <span className="tag tag-niños">👶 Niños</span>}
           {restaurante.tipo && <span className="tag tag-tipo">{restaurante.tipo}</span>}
         </div>
+        {restaurante.description && (
+          <div className="card-description">
+            <button className="description-toggle" onClick={() => setShowDescription(!showDescription)}>
+              {showDescription ? 'Ocultar info' : 'Ver info'}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points={showDescription ? "18 15 12 9 6 15" : "6 9 12 15 18 9"}/>
+              </svg>
+            </button>
+            {showDescription && (
+              <div className="description-text">{restaurante.description}</div>
+            )}
+          </div>
+        )}
       </div>
       <button className="card-check" onClick={handleToggle}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
